@@ -1,6 +1,12 @@
 # JS Playground
 基于 Monaco Editor 构建的轻量 JavaScript 在线代码运行器。
 
+🔗 在线预览：
+- Netlify（推荐，国内访问更快）：https://js-playground.netlify.app/
+- GitHub Pages：https://dxiangwiki.github.io/js-playground/
+- GitHub源码仓库：https://github.com/dxiangwiki/js-playground
+
+
 ## ✨ 功能特性
 - 代码编辑器使用 Monaco（VS Code 同款内核）
 - 编辑器与控制台支持拖拽分割，自由调整高度

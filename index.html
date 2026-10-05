@@ -64,7 +64,6 @@ body{
   background:#444;
   margin:4px 0;
 }
-
 /* ========== 原顶部工具栏 ========== */
 .top-bar{
   display:flex;
@@ -213,7 +212,6 @@ button{
     </div>
   </div>
 </div>
-
 <!-- 原工具栏 -->
 <div class="top-bar">
   <div class="title">
@@ -224,7 +222,6 @@ button{
     <button class="btn-default" id="fontMinus">A-</button>
     <button class="btn-default" id="fontReset">默认</button>
     <button class="btn-default" id="fontPlus">A+</button>
-
     <button class="btn-default" id="saveLocalBtn">保存到浏览器</button>
     <button class="btn-default" id="exportFileBtn">导出js文件</button>
     <button class="btn-default" id="importFileBtn">导入文件</button>
@@ -234,7 +231,6 @@ button{
     <button class="btn-default" id="clearConsoleBtn">清空控制台</button>
   </div>
 </div>
-
 <div class="main-wrap">
   <div id="editor"></div>
   <div class="resizer" id="resizer"></div>
@@ -246,7 +242,6 @@ button{
     <div id="output"></div>
   </div>
 </div>
-
 <div class="status-bar">
   <span id="statLine">行: 1</span>
   <span id="statChar">字符: 0</span>
@@ -254,7 +249,6 @@ button{
 </div>
 <input type="file" id="fileInput" accept=".js,.txt">
 <iframe id="sandbox" style="display:none"></iframe>
-
 <script>
 let editor;
 const outputDom = document.getElementById('output');
@@ -264,14 +258,12 @@ const statLine = document.getElementById('statLine');
 const statChar = document.getElementById('statChar');
 const DEFAULT_FONT_SIZE = 14;
 let currentFontSize = Number(localStorage.getItem('jsPlayFont')) || DEFAULT_FONT_SIZE;
-
 // 拖拽分割条
 const resizer = document.getElementById('resizer');
 const consolePanel = document.getElementById('consolePanel');
 const editorDom = document.getElementById('editor');
 let isDragging = false;
 const initConsoleHeight = 280;
-
 function setLayout(){
   const mainWrapRect = document.querySelector('.main-wrap').getBoundingClientRect();
   const totalH = mainWrapRect.height;
@@ -306,35 +298,76 @@ document.addEventListener('mouseup', ()=>{
   }
 });
 window.addEventListener('resize',()=> setLayout());
-
 require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' } });
 require(['vs/editor/editor.main'], ()=>{
-  // 代码片段
+  // ========== 代码片段 Snippet ==========
   monaco.languages.registerCompletionItemProvider("javascript", {
     provideCompletionItems: () => {
       const snippets = [
-        {label:"for",insertText:"for (let ${1:i}=0;${1:i}<${2:length};${1:i}++){\n\t$0\n}",detail:"普通for循环"},
-        {label:"forof",insertText:"for (const ${1:item} of ${2:array}){\n\t$0\n}",detail:"for of循环"},
-        {label:"forin",insertText:"for (const ${1:key} in ${2:obj}){\n\t$0\n}",detail:"for in循环"},
-        {label:"foreach",insertText:"${1:array}.forEach(${2:item}=>{\n\t$0\n});",detail:"数组forEach"},
-        {label:"function",insertText:"function ${1:funcName}(${2}){\n\t$0\n}",detail:"函数声明"},
-        {label:"fun",insertText:"function ${1:funcName}(${2}){\n\t$0\n}",detail:"函数声明简写"},
-        {label:"if",insertText:"if(${1:condition}){\n\t$0\n}",detail:"if判断"},
-        {label:"ifelse",insertText:"if(${1:condition}){\n\t$2\n}else{\n\t$0\n}",detail:"if else"},
-        {label:"try",insertText:"try{\n\t$1\n}catch(${2:err}){\n\t$0\n}",detail:"try catch"},
-        {label:"clog",insertText:"console.log($1)$0",detail:"console.log"}
-      ];
-      return {suggestions:snippets.map(s=>{
-        return {
-          label:s.label,
-          kind:monaco.languages.CompletionItemKind.Snippet,
-          insertText:s.insertText,
-          detail:s.detail
+        {
+          label:"for",
+          insertText:"for (let ${1:i} = 0; ${1:i} < ${2:length}; ${1:i}++) {\n\t$0\n}",
+          detail:"普通for循环"
+        },
+        {
+          label:"forof",
+          insertText:"for (const ${1:item} of ${2:array}) {\n\t$0\n}",
+          detail:"for of循环"
+        },
+        {
+          label:"forin",
+          insertText:"for (const ${1:key} in ${2:obj}) {\n\t$0\n}",
+          detail:"for in循环"
+        },
+        {
+          label:"foreach",
+          insertText:"${1:array}.forEach(${2:item} => {\n\t$0\n});",
+          detail:"数组forEach"
+        },
+        {
+          label:"function",
+          insertText:"function ${1:funcName}(${2}) {\n\t$0\n}",
+          detail:"函数声明"
+        },
+        {
+          label:"fun",
+          insertText:"function ${1:funcName}(${2}) {\n\t$0\n}",
+          detail:"函数声明简写"
+        },
+        {
+          label:"if",
+          insertText:"if (${1:condition}) {\n\t$0\n}",
+          detail:"if判断"
+        },
+        {
+          label:"ifelse",
+          insertText:"if (${1:condition}) {\n\t$2\n} else {\n\t$0\n}",
+          detail:"if else"
+        },
+        {
+          label:"try",
+          insertText:"try {\n\t$1\n} catch(${2:err}) {\n\t$0\n}",
+          detail:"try catch"
+        },
+        {
+          label:"clog",
+          insertText:"console.log(${1})$0",
+          detail:"console.log"
         }
-      })}
+      ];
+      return {
+        suggestions:snippets.map(s=>{
+          return {
+            label:s.label,
+            kind:monaco.languages.CompletionItemKind.Snippet,
+            insertText:s.insertText,
+            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            detail:s.detail
+          }
+        })
+      }
     }
   });
-
   const savedCode = localStorage.getItem('jsPlayCode');
   const defaultCode = `// JS Playground 在线运行器
 // 示例代码，可以直接修改运行
@@ -344,7 +377,6 @@ let b = 200;
 console.log(a + b);
 console.warn("⚠️ 警告信息");
 console.error("🔴 错误信息");
-
 // 语法错误测试：function
 // 输入 for / function / clog 试试代码片段
 `;
@@ -359,11 +391,11 @@ console.error("🔴 错误信息");
     fontFamily: "'JetBrains Mono', Consolas, monospace",
     snippetSuggestions: "top",
     tabCompletion: "on",
-    suggest: {snippetsPreventQuickSuggestions:false}
+    suggest: {snippetsPreventQuickSuggestions:false},
+    mouseWheelZoom: true, // 原生开启Ctrl+滚轮缩放！
   });
   setLayout();
   outputDom.style.fontSize = currentFontSize + "px";
-
   function updateStat(){
     const model = editor.getModel();
     const pos = editor.getPosition();
@@ -373,8 +405,30 @@ console.error("🔴 错误信息");
   editor.onDidChangeCursorPosition(updateStat);
   editor.onDidChangeModelContent(updateStat);
   updateStat();
-});
 
+  // 监听编辑器字体缩放变化，同步更新控制台字体
+  editor.onDidChangeConfiguration((event) => {
+    if (event.hasChanged(monaco.editor.EditorOption.fontSize)) {
+      currentFontSize = editor.getOption(monaco.editor.EditorOption.fontSize);
+      localStorage.setItem('jsPlayFont', currentFontSize);
+      outputDom.style.fontSize = currentFontSize + "px";
+    }
+  });
+
+  // ========== Ctrl + / Ctrl - 快捷键缩放 ==========
+  document.addEventListener('keydown', function (e) {
+    if (e.ctrlKey) {
+      if (e.key === '+' || e.key === '=') {
+        e.preventDefault();
+        setFontSize(currentFontSize + 1);
+      } else if (e.key === '-') {
+        e.preventDefault();
+        setFontSize(currentFontSize - 1);
+      }
+    }
+  });
+
+});
 // 字体控制
 function setFontSize(size){
   currentFontSize = Math.max(6, size);
@@ -385,7 +439,6 @@ function setFontSize(size){
 document.getElementById("fontPlus").onclick = ()=> setFontSize(currentFontSize +2);
 document.getElementById("fontMinus").onclick = ()=> setFontSize(currentFontSize -2);
 document.getElementById("fontReset").onclick = ()=> setFontSize(DEFAULT_FONT_SIZE);
-
 // ===== 功能函数 =====
 function saveToLocal(){
   const code = editor.getValue();
@@ -414,7 +467,6 @@ let b = 200;
 console.log(a + b);
 console.warn("⚠️ 警告信息");
 console.error("🔴 错误信息");
-
 // 语法错误测试：function
 // 输入 for / function / clog 试试代码片段
 `;
@@ -423,9 +475,10 @@ console.error("🔴 错误信息");
 function showShortcutHelp(){
   alert(`快捷键列表：
 Ctrl+S     保存代码到浏览器
-Ctrl+Shift+S 导出JS文件`);
+Ctrl+Shift+S 导出JS文件
+Ctrl + 鼠标滚轮：缩放字体
+Ctrl + + / Ctrl + -：缩放字体`);
 }
-
 // 绑定菜单栏点击事件
 document.getElementById('menu-saveLocal').onclick = saveToLocal;
 document.getElementById('menu-exportFile').onclick = exportCodeFile;
@@ -435,7 +488,6 @@ document.getElementById('menu-fontPlus').onclick = ()=> setFontSize(currentFontS
 document.getElementById('menu-fontMinus').onclick = ()=> setFontSize(currentFontSize-2);
 document.getElementById('menu-fontDefault').onclick = ()=> setFontSize(DEFAULT_FONT_SIZE);
 document.getElementById('menu-shortcut').onclick = showShortcutHelp;
-
 // 原有按钮绑定
 document.getElementById('saveLocalBtn').onclick = saveToLocal;
 document.getElementById('exportFileBtn').onclick = exportCodeFile;
@@ -448,7 +500,6 @@ document.getElementById('copyBtn').onclick = async ()=>{
 document.getElementById('clearConsoleBtn').onclick = ()=>{
   outputDom.innerHTML = "";
 };
-
 // 文件导入监听
 document.getElementById('fileInput').onchange = (e)=>{
   const file = e.target.files[0];
@@ -460,7 +511,6 @@ document.getElementById('fileInput').onchange = (e)=>{
   reader.readAsText(file);
   e.target.value = '';
 };
-
 // 运行代码
 document.getElementById('runBtn').onclick = function(){
   outputDom.innerHTML = "";
@@ -502,8 +552,7 @@ window.addEventListener('message', async (e)=>{
 })
 <\/script>
 `;
-
-// ========== Ctrl+S快捷键 ==========
+// ========== Ctrl+S 保存快捷键 ==========
 document.addEventListener('keydown', function(e) {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
     e.preventDefault();
